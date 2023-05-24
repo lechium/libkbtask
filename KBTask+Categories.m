@@ -1,6 +1,35 @@
 
 #import "KBTask+Categories.h"
 #import "KBTaskManager.h"
+#import "NSTask.h"
+
+@implementation NSTask (KBTask)
+
+- (void) waitUntilExit {
+    
+    NSTimer    *timer = nil;
+    while ([self isRunning]) {
+        NSDate    *limit = nil;
+        
+        limit = [[NSDate alloc] initWithTimeIntervalSinceNow: 0.1];
+        if (timer == nil) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnonnull"
+            timer = [NSTimer scheduledTimerWithTimeInterval: 0.1
+                                                     target: nil
+                                                   selector: @selector(class)
+                                                   userInfo: nil
+                                                    repeats: YES];
+#pragma clang diagnostic pop
+        }
+        [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode
+                                 beforeDate: limit];
+    }
+    [timer invalidate];
+}
+
+@end
+
 
 @implementation NSArray (KBTask)
 

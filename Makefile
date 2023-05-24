@@ -1,6 +1,6 @@
 export THEOS=/Users/$(shell whoami)/Projects/theos
 TARGET := appletv:clang:latest:9.0
-
+DEBUG=0
 include $(THEOS)/makefiles/common.mk
 
 LIBRARY_NAME = libkbtask

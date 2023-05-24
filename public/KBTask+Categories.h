@@ -1,5 +1,10 @@
 
 #import <Foundation/Foundation.h>
+#import "NSTask.h"
+
+@interface NSTask (KBTask)
+- (void) waitUntilExit;
+@end
 
 @interface NSArray (KBTask)
 - (NSArray *)kb_task_sanitizedArray:(BOOL)sanitizeAll forced:(BOOL)forced;
