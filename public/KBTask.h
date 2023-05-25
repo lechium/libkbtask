@@ -1,5 +1,8 @@
+#import <Foundation/Foundation.h>
+#import <TargetConditionals.h>
+#if TARGET_OS_IOS || TARGET_OS_TV
 #import "NSTask.h"
-
+#endif
 NS_ASSUME_NONNULL_BEGIN
 
 @interface KBTask : NSObject

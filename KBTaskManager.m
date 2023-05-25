@@ -65,7 +65,7 @@ static NSString *prefixPath = @"/fs/jb";
     }
     [handle closeFile];
     task = nil;
-    return temp;
+    return [temp kb_task_whitespaceTrimmedString];
 }
 
 @end

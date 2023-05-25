@@ -1,7 +1,8 @@
 
 #import <Foundation/Foundation.h>
+#if TARGET_OS_IOS || TARGET_OS_TV
 #import "NSTask.h"
-
+#endif
 #define FM [NSFileManager defaultManager]
 
 @interface KBTaskManager: NSObject

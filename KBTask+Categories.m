@@ -1,6 +1,7 @@
 
 #import "KBTask+Categories.h"
 #import "KBTaskManager.h"
+#if TARGET_OS_IOS || TARGET_OS_TV
 #import "NSTask.h"
 
 @implementation NSTask (KBTask)
@@ -30,7 +31,7 @@
 
 @end
 
-
+#endif
 @implementation NSArray (KBTask)
 
 - (NSArray *)kb_task_sanitizedArray:(BOOL)sanitizeAll forced:(BOOL)forced {
@@ -77,6 +78,21 @@
 @end
 
 @implementation NSString (KBTask)
+
+- (NSString *)kbT_runPathForSearchPath:(NSString *)path {
+    NSArray *paths = [path componentsSeparatedByString:@":"];
+    __block NSString *_finalPath = nil;
+    [paths enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSString *pathTest = [obj stringByAppendingPathComponent:self];
+        //DLog(@"testing path: %@", pathTest);
+        if ([FM fileExistsAtPath:pathTest]) {
+            NSLog(@"found path: %@", pathTest);
+            _finalPath = pathTest;
+            *stop = true;
+        }
+    }];
+    return _finalPath;
+}
 
 - (NSString *)kb_task_whitespaceTrimmedString {
     return [self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
