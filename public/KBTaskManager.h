@@ -11,5 +11,5 @@
 + (id)sharedManager;
 + (NSString *)kb_task_environmentPath;
 + (NSDictionary *)kb_task_executableEnvironment;
-+ (NSString *)kb_task_returnForProcess:(NSString *)process;
++ (NSString *)kb_task_returnForProcess:(NSString *)format, ...;
 @end

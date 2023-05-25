@@ -43,8 +43,14 @@ static NSString *prefixPath = @"/fs/jb";
     return shared;
 }
 
-+ (NSString *)kb_task_returnForProcess:(NSString *)process {
-    
+
++ (NSString *)kb_task_returnForProcess:(NSString *)format, ... {
+    if (format==nil)
+        return nil;
+    va_list args;
+    va_start(args, format);
+    NSString *process = [[NSString alloc] initWithFormat:format arguments:args];
+    va_end(args);
     NSArray *rawProcessArgumentArray = [process kb_task_spaceDelimitedArray];
     NSString *taskBinary = [[rawProcessArgumentArray firstObject] kb_task_sanitizedString];
     NSArray *taskArguments = [rawProcessArgumentArray subarrayWithRange:NSMakeRange(1, rawProcessArgumentArray.count-1)];
@@ -66,6 +72,34 @@ static NSString *prefixPath = @"/fs/jb";
     [handle closeFile];
     task = nil;
     return [temp kb_task_whitespaceTrimmedString];
+}
+
+- (void)kbT_runProcess:(NSString *)call withCompletion:(void(^)(NSString *output, NSInteger returnStatus))block {
+
+    NSArray *args = [call componentsSeparatedByString:@" "];
+    NSString *taskBinary = args[0];
+    NSArray *taskArguments = [args subarrayWithRange:NSMakeRange(1, args.count-1)];
+    //DDLogInfo(@"%@ %@", taskBinary, [taskArguments componentsJoinedByString:@" "]);
+    KBTask *task = [[KBTask alloc] init];
+    NSPipe *pipe = [[NSPipe alloc] init];
+    NSFileHandle *handle = [pipe fileHandleForReading];
+    [task setLaunchPath:taskBinary];
+    [task setArguments:taskArguments];
+    [task setStandardOutput:pipe];
+    [task setStandardError:pipe];
+    [task launch];
+    NSData *outData = nil;
+    NSString *temp = nil;
+    while((outData = [handle readDataToEndOfFile]) && [outData length]){
+        temp = [[NSString alloc] initWithData:outData encoding:NSASCIIStringEncoding];
+    }
+    [handle closeFile];
+    [task waitUntilExit];
+    int termStatus = [task terminationStatus];
+    task = nil;
+    if (block){
+        block(temp, termStatus);
+    }
 }
 
 @end

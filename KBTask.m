@@ -39,23 +39,23 @@
 
 - (void)launch {
     if ([[KBTaskManager sharedManager] usePrefixes]) {
-        NSLog(@"[KBTask] use prefixes: %@", [self launchPath]);
+        //NSLog(@"[KBTask] use prefixes: %@", [self launchPath]);
         NSString *lp = [self launchPath];
         if (![FM fileExistsAtPath:lp]){
-            NSLog(@"[KBTask] launch path doesnt exist: %@", lp);
+            //NSLog(@"[KBTask] launch path doesnt exist: %@", lp);
             NSString *newLp = [lp kb_task_pathAppendingPrefix];
-            NSLog(@"[KBTask] looking for new lp: %@", newLp);
+            //NSLog(@"[KBTask] looking for new lp: %@", newLp);
             if ([FM fileExistsAtPath:newLp]){
-                NSLog(@"[KBTask] Substituting %@ for %@", newLp, lp);
+                //NSLog(@"[KBTask] Substituting %@ for %@", newLp, lp);
                 self.launchPath = newLp;
                 self.task.launchPath = newLp;
             }
         }
         self.arguments = [self sanitizedArguments];
         self.task.arguments = self.arguments;
-        NSLog(@"[KBTask] arguments: %@", [self.arguments componentsJoinedByString:@" "]);
+        //NSLog(@"[KBTask] arguments: %@", [self.arguments componentsJoinedByString:@" "]);
         if (![FM fileExistsAtPath:self.task.launchPath]){
-            NSLog(@"[KBTask] potential exception!! launch path doesnt exist: %@ attempting search path try", self.task.launchPath);
+            //NSLog(@"[KBTask] potential exception!! launch path doesnt exist: %@ attempting search path try", self.task.launchPath);
             self.task.launchPath = [self _environmentLaunchPath];
             if (![FM fileExistsAtPath:self.task.launchPath]){
                 NSLog(@"[KBTask] last try failed: %@", self.task.launchPath);
@@ -67,7 +67,7 @@
     }
     if (![FM fileExistsAtPath:self.task.launchPath]){
         
-        NSLog(@"[KBTask] potential exception!! launch path doesnt exist: %@ attempting search path try", self.task.launchPath);
+        //NSLog(@"[KBTask] potential exception!! launch path doesnt exist: %@ attempting search path try", self.task.launchPath);
         self.task.launchPath = [self _environmentLaunchPath];
         if (![FM fileExistsAtPath:self.task.launchPath]){
             NSLog(@"[KBTask] last try failed: %@", self.task.launchPath);

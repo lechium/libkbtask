@@ -86,7 +86,7 @@
         NSString *pathTest = [obj stringByAppendingPathComponent:self];
         //DLog(@"testing path: %@", pathTest);
         if ([FM fileExistsAtPath:pathTest]) {
-            NSLog(@"found path: %@", pathTest);
+            //NSLog(@"found path: %@", pathTest);
             _finalPath = pathTest;
             *stop = true;
         }
