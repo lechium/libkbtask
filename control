@@ -1,6 +1,6 @@
 Package: com.nito.kbtask
 Name: KBTask
-Version: 0.0.1
+Version: 1.0
 Architecture: appletvos-arm64
 Description: A robust wrapper around NSTask that provides an experience that can easily adapt between rootless and non-rootless jailbreaks. 
 Maintainer: Kevin Bradley
