@@ -2,6 +2,8 @@
 #import "KBTaskManager.h"
 #import "KBTask+Categories.h"
 
+#define DEFAULT_PATH @"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/X11:/usr/games"
+
 @interface KBTask()
 
 @property (nonatomic, strong) NSTask *task;
@@ -12,9 +14,22 @@
 
 + (NSTask *)launchedTaskWithLaunchPath:(NSString *)path arguments:(NSArray *)arguments {
     if ([[KBTaskManager sharedManager] usePrefixes]) {
-        return [NSTask launchedTaskWithLaunchPath:[path kb_task_pathAppendingPrefix] arguments:[arguments kb_task_sanitizedArray:true]];
+        NSString *searchPath = [KBTaskManager kb_task_environmentPath];
+        NSString *lp = [path kbT_generatedLaunchPathForSearchPath:searchPath];
+        if (lp){
+            return [NSTask launchedTaskWithLaunchPath:lp arguments:[arguments kb_task_sanitizedArray:true]];
+        } else {
+            NSLog(@"[KBTask:ERROR] couldn't find launch path for: %@", path);
+            return nil;
+        }
     }
-    return [NSTask launchedTaskWithLaunchPath:path arguments:arguments];
+    NSString *searchPath = DEFAULT_PATH;
+    NSString *lp = [path kbT_generatedLaunchPathForSearchPath:searchPath];
+    if (lp){
+        return [NSTask launchedTaskWithLaunchPath:lp arguments:[arguments kb_task_sanitizedArray:true]];
+    }
+    NSLog(@"[KBTask:ERROR] couldn't find launch path for: %@", path);
+    return nil;
 }
 
 - (instancetype)init {
@@ -55,11 +70,15 @@
         self.task.arguments = self.arguments;
         //NSLog(@"[KBTask] arguments: %@", [self.arguments componentsJoinedByString:@" "]);
         if (![FM fileExistsAtPath:self.task.launchPath]){
-            //NSLog(@"[KBTask] potential exception!! launch path doesnt exist: %@ attempting search path try", self.task.launchPath);
-            self.task.launchPath = [self _environmentLaunchPath];
-            if (![FM fileExistsAtPath:self.task.launchPath]){
+            NSLog(@"[KBTask] potential exception!! launch path doesnt exist: %@ attempting search path try", self.task.launchPath);
+            NSString *tmpLaunchPath = [self _environmentLaunchPath];
+            //NSLog(@"[KBTask] _environmentLaunchPath: %@", tmpLaunchPath);
+            
+            if (![FM fileExistsAtPath:tmpLaunchPath] || tmpLaunchPath == nil){
                 NSLog(@"[KBTask] last try failed: %@", self.task.launchPath);
                 return;
+            } else {
+                self.task.launchPath = tmpLaunchPath;
             }
         }
         [self.task launch];
@@ -67,9 +86,10 @@
     }
     if (![FM fileExistsAtPath:self.task.launchPath]){
         
-        //NSLog(@"[KBTask] potential exception!! launch path doesnt exist: %@ attempting search path try", self.task.launchPath);
+        NSLog(@"[KBTask] potential exception!! launch path doesnt exist: %@ attempting search path try", self.task.launchPath);
         self.task.launchPath = [self _environmentLaunchPath];
-        if (![FM fileExistsAtPath:self.task.launchPath]){
+        //NSLog(@"[KBTask] _environmentLaunchPath: %@", self.task.launchPath);
+        if (![FM fileExistsAtPath:self.task.launchPath] || self.task.launchPath == nil){
             NSLog(@"[KBTask] last try failed: %@", self.task.launchPath);
             return;
         }
@@ -144,7 +164,9 @@
 }
 
 - (void)setLaunchPath:(NSString *)path {
-    self.task.launchPath = path;
+    if (path) {
+        self.task.launchPath = path;
+    }
 }
 
 - (NSString *)launchPath {

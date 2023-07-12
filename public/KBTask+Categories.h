@@ -15,6 +15,7 @@
 @end
 
 @interface NSString (KBTask)
+- (NSString *)kbT_generatedLaunchPathForSearchPath:(NSString *)path;
 - (NSString *)kbT_runPathForSearchPath:(NSString *)path;
 - (NSString *)kb_task_whitespaceTrimmedString;
 - (NSArray *)kb_task_spaceDelimitedArray;

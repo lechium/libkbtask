@@ -79,14 +79,41 @@
 
 @implementation NSString (KBTask)
 
+- (NSString *)kbT_generatedLaunchPathForSearchPath:(NSString *)path {
+    if ([[KBTaskManager sharedManager] usePrefixes]) {
+        if (![FM fileExistsAtPath:self]){
+            //NSLog(@"[KBTask] launch path doesnt exist: %@", self);
+            NSString *newLp = [self kb_task_pathAppendingPrefix];
+            //NSLog(@"[KBTask] looking for new lp: %@", newLp);
+            if ([FM fileExistsAtPath:newLp]){
+                //NSLog(@"[KBTask] Substituting %@ for %@", newLp, self);
+                return newLp;
+            } else {
+                newLp = [self kbT_runPathForSearchPath:path];
+                if ([FM fileExistsAtPath:newLp]){
+                    return newLp;
+                }
+            }
+        }
+    } else {
+        if (![FM fileExistsAtPath:self]){
+            NSString *newLp = [self kbT_runPathForSearchPath:path];
+            if ([FM fileExistsAtPath:newLp]){
+                return newLp;
+            }
+        }
+    }
+    return self;
+}
+
 - (NSString *)kbT_runPathForSearchPath:(NSString *)path {
     NSArray *paths = [path componentsSeparatedByString:@":"];
     __block NSString *_finalPath = nil;
     [paths enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSString *pathTest = [obj stringByAppendingPathComponent:self];
-        //DLog(@"testing path: %@", pathTest);
+        NSString *pathTest = [obj stringByAppendingPathComponent:[self lastPathComponent]];
+        //NSLog(@"[KBTask] testing path: %@", pathTest);
         if ([FM fileExistsAtPath:pathTest]) {
-            //NSLog(@"found path: %@", pathTest);
+            //NSLog(@"[KBTask] found path: %@", pathTest);
             _finalPath = pathTest;
             *stop = true;
         }
