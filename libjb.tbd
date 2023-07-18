@@ -1,0 +1,19 @@
+--- !tapi-tbd
+tbd-version:           4
+targets:               [ arm64-tvos ]
+uuids:
+  - target: arm64-tvos
+    value: 'AC35AB6F-71B4-3EFF-BF87-9974CEF40BC2'
+flags:                 [ flat_namespace, not_app_extension_safe ]
+install-name:          /fs/jb/usr/lib/libjb.dylib
+current-version:       0
+compatibility-version: 0
+exports:
+  - targets:              [ arm64-tvos ]
+    objc-classes:         [ JBManager ]
+undefineds:
+  - targets:              [ arm64-tvos ]
+    symbols:              [ ___CFConstantStringClassReference,
+                            __objc_empty_cache, dyld_stub_binder ]
+    objc-classes:         [ NSObject ]
+...

@@ -2,12 +2,12 @@
 #import "KBTaskManager.h"
 #import "KBTask.h"
 #import "KBTask+Categories.h"
-
-static NSString *prefixPath = @"/fs/jb";
+#import "libjb.h"
 
 @implementation KBTaskManager
 
 + (NSString *)kb_task_environmentPath {
+    NSString *prefixPath = [KBTaskManager prefixPath];
     return [NSString stringWithFormat:@"PATH:%@/usr/bin:%@/usr/libexec:%@/usr/sbin:%@/bin:%@/usr/local/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/binpack/usr/bin:/binpack/usr/sbin:/binpack/bin:/binpack/sbin", prefixPath, prefixPath, prefixPath, prefixPath, prefixPath];
 }
 
@@ -24,8 +24,12 @@ static NSString *prefixPath = @"/fs/jb";
     };
 }
 
++ (NSString *)prefixPath {
+    return [JBManager jbPrefix];
+}
+
 + (BOOL)_determineUsePrefixes {
-    return ([FM contentsOfDirectoryAtPath:prefixPath error:nil].count > 0);
+    return ([FM contentsOfDirectoryAtPath:[KBTaskManager prefixPath] error:nil].count > 0);
 }
 
 + (id)sharedManager {
@@ -36,7 +40,7 @@ static NSString *prefixPath = @"/fs/jb";
             shared = [[KBTaskManager alloc] init];
             shared.usePrefixes = [self _determineUsePrefixes];
             if (shared.usePrefixes) {
-                shared.prefixPath = prefixPath;
+                shared.prefixPath = [KBTaskManager prefixPath];
             }
         });
     }
