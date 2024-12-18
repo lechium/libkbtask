@@ -29,7 +29,11 @@
 }
 
 + (BOOL)_determineUsePrefixes {
-    return ([FM contentsOfDirectoryAtPath:[KBTaskManager prefixPath] error:nil].count > 0);
+    NSString *pp = [KBTaskManager prefixPath];
+    if (pp.length == 0 || pp == nil) {
+        return false;
+    }
+    return ([FM contentsOfDirectoryAtPath:pp error:nil].count > 0);
 }
 
 + (id)sharedManager {
